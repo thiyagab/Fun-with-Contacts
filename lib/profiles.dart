@@ -1,3 +1,5 @@
+import 'package:contacts_service/contacts_service.dart';
+
 final List<Profile> demoProfiles = [
   new Profile(
     photos: [
@@ -27,4 +29,6 @@ class Profile {
   final String bio;
 
   Profile({this.photos, this.name, this.bio});
+
+
 }

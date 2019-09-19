@@ -435,10 +435,13 @@ class ProfileCard extends StatefulWidget {
 
 class _ProfileCardState extends State<ProfileCard> {
   Widget _buildBackground() {
-    return new PhotoBrowser(
-      photoAssetPaths: widget.profile.photos,
-      visiblePhotoIndex: 0,
-    );
+    if(widget.profile.photos.length>0)
+      return new PhotoBrowser(
+        photoAssetPaths: widget.profile.photos,
+        visiblePhotoIndex: 0,
+      );
+    else
+      return new Text("Photo place holder");
   }
 
   Widget _buildProfileSynopsis() {

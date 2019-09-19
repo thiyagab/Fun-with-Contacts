@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import './cards.dart';
 import './matches.dart';
 import './profiles.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 void main() => runApp(MyApp());
 
-final MatchEngine matchEngine = new MatchEngine(
-    matches: demoProfiles.map((Profile profile) {
-  return Match(profile: profile);
-}).toList());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -32,10 +29,15 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
+
+
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Match match = new Match();
+
+  MatchEngine matchEngine;
 
   Widget _buildAppBar() {
     return AppBar(
@@ -68,6 +70,32 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ],
+    );
+  }
+
+  Future<Profile> loadContacts() async{
+
+
+// Get all contacts on device
+    Iterable<Contact> contacts = await ContactsService.getContacts();
+    Iterable<Profile> profiles=contacts.map(fromContact);
+    MatchEngine newMatchEngine=new MatchEngine(
+        matches: profiles.map((Profile profile) {
+          return Match(profile: profile);
+        }).toList());
+
+    setState((){matchEngine=newMatchEngine;});
+
+  }
+
+  Profile fromContact(Contact contact){
+    Profile profile =
+    new Profile(
+      photos: [
+
+      ],
+      name: contact.displayName,
+      bio: contact.phones.join(" "),
     );
   }
 
@@ -118,13 +146,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: _buildAppBar(),
-      body: new CardStack(
+      body: matchEngine!=null?new CardStack(
         matchEngine: matchEngine,
-      ),
+      ):Text("Loading.."),
       bottomNavigationBar: _buildBottomBar(),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadContacts();
   }
 }
 
