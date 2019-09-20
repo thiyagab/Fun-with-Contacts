@@ -470,7 +470,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   new Text(widget.profile.name,
                       style:
                           new TextStyle(color: Colors.white, fontSize: 24.0)),
-                  new Text(widget.profile.bio,
+                  new Text(widget.profile.phones.join("\n"),
                       style: new TextStyle(color: Colors.white, fontSize: 18.0))
                 ],
               ),

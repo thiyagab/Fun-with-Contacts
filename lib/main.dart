@@ -3,6 +3,9 @@ import './cards.dart';
 import './matches.dart';
 import './profiles.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'dart:math';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:android_intent/android_intent.dart';
 
 void main() => runApp(MyApp());
 
@@ -78,14 +81,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // Get all contacts on device
     Iterable<Contact> contacts = await ContactsService.getContacts(withThumbnails: false);
-    Iterable<Profile> profiles=contacts.map(fromContact);
+    List profiles=shuffle(contacts.map(fromContact).toList());
     MatchEngine newMatchEngine=new MatchEngine(
-        matches: profiles.map((Profile profile) {
+        matches: profiles.map((Object profile) {
           return Match(profile: profile);
         }).toList());
 
     setState((){matchEngine=newMatchEngine;});
 
+  }
+
+  //TODO Optimize
+
+  List shuffle(List items) {
+    var random = new Random();
+
+    // Go through all elements.
+    for (var i = items.length - 1; i > 0; i--) {
+
+      // Pick a pseudorandom number according to the list length
+      var n = random.nextInt(i + 1);
+      var temp = items[i];
+      items[i] = items[n];
+      items[n] = temp;
+    }
+
+    return items;
   }
 
   Profile fromContact(Contact contact){
@@ -95,7 +116,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ],
       name: contact.displayName,
-      bio: contact.phones.map(appendString).join("\n"),
+      phones: contact.phones.map(appendString).toList(),
+      id:contact.identifier,
     );
     return profile;
   }
@@ -116,7 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
               new RoundIconButton.small(
                 icon: Icons.refresh,
                 iconColor: Colors.orange,
-                onPressed: () {},
+                onPressed: () {
+                  String phoneNumber=matchEngine.currentMatch.profile.phones.elementAt(0).split(" ")[1];
+                  launch("https://wa.me/"+phoneNumber);
+                },
               ),
               new RoundIconButton.large(
                 icon: Icons.clear,
@@ -130,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconColor: Colors.blue,
                 onPressed: () {
                   matchEngine.currentMatch.superLike();
+                  openContact(matchEngine.currentMatch.profile.id);
                 },
               ),
               new RoundIconButton.large(
@@ -142,7 +168,10 @@ class _MyHomePageState extends State<MyHomePage> {
               new RoundIconButton.small(
                 icon: Icons.lock,
                 iconColor: Colors.purple,
-                onPressed: () {},
+                onPressed: () {
+                  String phoneNumber=matchEngine.currentMatch.profile.phones.elementAt(0).split(" ")[1];
+                  launch("tel:"+phoneNumber);
+                },
               ),
             ],
           ),
@@ -165,6 +194,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     loadContacts();
+  }
+
+  void openContact (String contactId) async {
+//    if (platform.isAndroid) {
+      final AndroidIntent intent = AndroidIntent(
+        action: 'action_view',
+        data: 'content://com.android.contacts/contacts/'+contactId, // replace com.example.app with your applicationId
+      );
+      await intent.launch();
+//    }
   }
 }
 

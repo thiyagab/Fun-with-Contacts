@@ -26,8 +26,10 @@ class Profile {
   final List<String> photos;
   final String name;
   final String bio;
+  final List<String> phones;
+  final String id;
 
-  Profile({this.photos, this.name, this.bio});
+  Profile({this.photos, this.name, this.bio,this.phones, this.id});
 
 
 }
