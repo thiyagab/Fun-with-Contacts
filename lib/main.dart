@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 // Get all contacts on device
-    Iterable<Contact> contacts = await ContactsService.getContacts();
+    Iterable<Contact> contacts = await ContactsService.getContacts(withThumbnails: false);
     Iterable<Profile> profiles=contacts.map(fromContact);
     MatchEngine newMatchEngine=new MatchEngine(
         matches: profiles.map((Profile profile) {
@@ -95,8 +95,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ],
       name: contact.displayName,
-      bio: contact.phones.join(" "),
+      bio: contact.phones.map(appendString).join("\n"),
     );
+    return profile;
+  }
+
+  String appendString(Item item){
+    return item.label+" "+item.value;
   }
 
   Widget _buildBottomBar() {

@@ -1,4 +1,3 @@
-import 'package:contacts_service/contacts_service.dart';
 
 final List<Profile> demoProfiles = [
   new Profile(

@@ -15,6 +15,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
+  flutter: 1.8.0
 
 dependencies:
   flutter:
@@ -26,7 +27,7 @@ dependencies:
 
   # fluttery: ^0.0.8
   fluttery_dart2: ^0.0.9
-  contacts_service: ^0.3.3
+  contacts_service: '^0.3.3'
 
 dev_dependencies:
   flutter_test:
