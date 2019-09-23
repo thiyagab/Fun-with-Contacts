@@ -27,9 +27,13 @@ dependencies:
 
   # fluttery: ^0.0.8
   fluttery_dart2: ^0.0.9
-  contacts_service: '^0.3.3'
+  contacts_service: '^0.3.4'
   url_launcher:
   android_intent:
+  two_letter_icon: ^0.0.1
+  logger: ^0.7.0+2
+  sqflite: ^1.1.6
+  path_provider: ^0.4.1
 
 dev_dependencies:
   flutter_test:

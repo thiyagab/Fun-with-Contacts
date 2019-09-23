@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttery_dart2/layout.dart';
-import 'package:tinder/profiles.dart';
+import 'package:tinder/data/profiles.dart';
 import './photos.dart';
 import './matches.dart';
+import 'pages/contact_details.dart';
+import 'package:logger/logger.dart';
 
 class CardStack extends StatefulWidget {
   final MatchEngine matchEngine;
@@ -18,6 +20,7 @@ class _CardStackState extends State<CardStack> {
   Key _frontCard;
   Match _currentMatch;
   double _nextCardScale = 0.0;
+  Logger logger =  Logger();
 
   @override
   void initState() {
@@ -79,19 +82,23 @@ class _CardStackState extends State<CardStack> {
   }
 
   Widget _buildBackCard() {
-    return Transform(
+//    logger.i("Backcard: "+widget.matchEngine.nextMatch.profile.name);
+    return
+      Transform(
       transform: Matrix4.identity()..scale(_nextCardScale, _nextCardScale),
       alignment: Alignment.center,
-      child: ProfileCard(
-        profile: widget.matchEngine.nextMatch.profile,
+      child:
+    ContactDetails(
+        contact:widget.matchEngine.nextMatch.profile,
       ),
     );
   }
 
   Widget _buildFrontCard() {
-    return ProfileCard(
+//    logger.i("frontcard: "+widget.matchEngine.currentMatch.profile.name);
+    return ContactDetails(
       key: _frontCard,
-      profile: widget.matchEngine.currentMatch.profile,
+      contact: widget.matchEngine.currentMatch.profile,
     );
   }
 
@@ -267,6 +274,7 @@ class _DraggableCardState extends State<DraggableCard>
           break;
         case SlideDirection.right:
           _slideRight();
+
           break;
         case SlideDirection.up:
           _slideUp();
@@ -424,91 +432,3 @@ class _DraggableCardState extends State<DraggableCard>
   }
 }
 
-class ProfileCard extends StatefulWidget {
-  final Profile profile;
-
-  ProfileCard({Key key, this.profile}) : super(key: key);
-
-  @override
-  _ProfileCardState createState() => _ProfileCardState();
-}
-
-class _ProfileCardState extends State<ProfileCard> {
-  Widget _buildBackground() {
-    if(widget.profile.photos.length>0)
-      return new PhotoBrowser(
-        photoAssetPaths: widget.profile.photos,
-        visiblePhotoIndex: 0,
-      );
-    else
-      return new Text("Photo place holder");
-  }
-
-  Widget _buildProfileSynopsis() {
-    return new Positioned(
-      left: 0.0,
-      right: 0.0,
-      bottom: 0.0,
-      child: new Container(
-        decoration: new BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.8),
-            ])),
-        padding: const EdgeInsets.all(24.0),
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            new Expanded(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  new Text(widget.profile.name,
-                      style:
-                          new TextStyle(color: Colors.white, fontSize: 24.0)),
-                  new Text(widget.profile.phones.join("\n"),
-                      style: new TextStyle(color: Colors.white, fontSize: 18.0))
-                ],
-              ),
-            ),
-            new Icon(
-              Icons.info,
-              color: Colors.white,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: new BoxDecoration(
-          borderRadius: new BorderRadius.circular(10.0),
-          boxShadow: [
-            new BoxShadow(
-              color: const Color(0x11000000),
-              blurRadius: 5.0,
-              spreadRadius: 2.0,
-            )
-          ]),
-      child: ClipRRect(
-        borderRadius: new BorderRadius.circular(10.0),
-        child: new Material(
-          child: new Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              _buildBackground(),
-              _buildProfileSynopsis(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
-import './profiles.dart';
+import 'package:tinder/data/profiles.dart';
+
+import 'data/contactsdb.dart';
 
 class MatchEngine extends ChangeNotifier {
   final List<Match> _matches;
@@ -36,6 +38,7 @@ class Match extends ChangeNotifier {
   void like() {
     if (decision == Decision.indecided) {
       decision = Decision.like;
+      DatabaseHelper.updateLiked(profile.id);
       notifyListeners();
     }
   }
@@ -43,6 +46,7 @@ class Match extends ChangeNotifier {
   void nope() {
     if (decision == Decision.indecided) {
       decision = Decision.nope;
+      DatabaseHelper.updateDisliked(profile.id);
       notifyListeners();
     }
   }
@@ -50,6 +54,7 @@ class Match extends ChangeNotifier {
   void superLike() {
     if (decision == Decision.indecided) {
       decision = Decision.superLike;
+      DatabaseHelper.updateSuperliked(profile.id);
       notifyListeners();
     }
   }

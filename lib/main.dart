@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import './cards.dart';
 import './matches.dart';
-import './profiles.dart';
+import 'package:tinder/data/profiles.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:android_intent/android_intent.dart';
+
+import 'data/contactsdb.dart';
+import 'data/contactsutil.dart';
 
 void main() => runApp(MyApp());
 
@@ -76,12 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<Profile> loadContacts() async{
-
-
-// Get all contacts on device
-    Iterable<Contact> contacts = await ContactsService.getContacts(withThumbnails: false);
-    List profiles=shuffle(contacts.map(fromContact).toList());
+  void loadContacts() async{
+    List profiles=await ContactsUtil.loadYetoSwipeContacts();
     MatchEngine newMatchEngine=new MatchEngine(
         matches: profiles.map((Object profile) {
           return Match(profile: profile);
@@ -93,34 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //TODO Optimize
 
-  List shuffle(List items) {
-    var random = new Random();
 
-    // Go through all elements.
-    for (var i = items.length - 1; i > 0; i--) {
-
-      // Pick a pseudorandom number according to the list length
-      var n = random.nextInt(i + 1);
-      var temp = items[i];
-      items[i] = items[n];
-      items[n] = temp;
-    }
-
-    return items;
-  }
-
-  Profile fromContact(Contact contact){
-    Profile profile =
-    new Profile(
-      photos: [
-
-      ],
-      name: contact.displayName,
-      phones: contact.phones.map(appendString).toList(),
-      id:contact.identifier,
-    );
-    return profile;
-  }
 
   String appendString(Item item){
     return item.label+" "+item.value;
@@ -139,8 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icons.refresh,
                 iconColor: Colors.orange,
                 onPressed: () {
-                  String phoneNumber=matchEngine.currentMatch.profile.phones.elementAt(0).split(" ")[1];
-                  launch("https://wa.me/"+phoneNumber);
+//                  String phoneNumber=matchEngine.currentMatch.profile.phones.elementAt(0).split(" ")[1];
+//                  launch("https://wa.me/"+phoneNumber);
                 },
               ),
               new RoundIconButton.large(
@@ -155,7 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconColor: Colors.blue,
                 onPressed: () {
                   matchEngine.currentMatch.superLike();
-                  openContact(matchEngine.currentMatch.profile.id);
                 },
               ),
               new RoundIconButton.large(
@@ -169,8 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icons.lock,
                 iconColor: Colors.purple,
                 onPressed: () {
-                  String phoneNumber=matchEngine.currentMatch.profile.phones.elementAt(0).split(" ")[1];
-                  launch("tel:"+phoneNumber);
+
                 },
               ),
             ],
