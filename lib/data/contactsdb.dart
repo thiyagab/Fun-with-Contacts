@@ -142,6 +142,11 @@ class DatabaseHelper {
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
+  static Future<int> queryRowCountFor(ContactState contactState) async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table where $columnState='+contactState.index.toString()));
+  }
+
   // We are assuming here that the id column in the map is set. The other
   // column values will be used to update the row.
   static Future<int> update(Map<String, dynamic> row) async {

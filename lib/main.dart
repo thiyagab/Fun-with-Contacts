@@ -60,9 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // TODO
         },
       ),
-      title: new FlutterLogo(
-        size: 30.0,
-        colors: Colors.red,
+      title: new Text(
+       ContactsUtil.yettoswipelength.toString()+'/'+ContactsUtil.getTotalContactsLength().toString()
       ),
       actions: <Widget>[
         new IconButton(
@@ -81,12 +80,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void loadContacts() async{
     List profiles=await ContactsUtil.loadYetoSwipeContacts();
-    MatchEngine newMatchEngine=new MatchEngine(
-        matches: profiles.map((Object profile) {
-          return Match(profile: profile);
-        }).toList());
-
-    setState((){matchEngine=newMatchEngine;});
+    if(profiles.length>0) {
+      MatchEngine newMatchEngine = new MatchEngine(
+          matches: profiles.map((Object profile) {
+            return Match(profile: profile);
+          }).toList());
+      newMatchEngine.addListener(onSwipeComplete);
+      setState(() {
+        matchEngine = newMatchEngine;
+      });
+    }
 
   }
 
@@ -174,6 +177,10 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       await intent.launch();
 //    }
+  }
+
+  void onSwipeComplete() {
+
   }
 }
 
