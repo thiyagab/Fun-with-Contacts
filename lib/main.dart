@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       title: new Text(
-       ContactsUtil.yettoswipelength.toString()+'/'+ContactsUtil.getTotalContactsLength().toString()
+       ContactsUtil.yettoswipelength.toString()+'/'+ContactsUtil.totalContacts.toString()
       ),
       actions: <Widget>[
         new IconButton(
@@ -79,6 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void loadContacts() async{
+
+    testMethod();
     List profiles=await ContactsUtil.loadYetoSwipeContacts();
     if(profiles.length>0) {
       MatchEngine newMatchEngine = new MatchEngine(
@@ -95,7 +97,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //TODO Optimize
 
+ void testMethod(){
+    var profiles = Set();
+    Profile profile1 = Profile(id:"200743");
+    Profile profile2 = Profile(id:"200744");
+    Profile profile3 = Profile(id:"200745");
 
+    profiles.add(profile1);
+    profiles.add(profile2);
+    profiles.add(profile3);
+
+    Profile profile4 = Profile(id:"200743");
+    print(profile1==profile4);
+    profiles.remove(profile4);
+
+
+ }
 
   String appendString(Item item){
     return item.label+" "+item.value;
@@ -124,21 +141,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   matchEngine.currentMatch.nope();
                 },
-              ),
-              new RoundIconButton.small(
+
+
+              ),new RoundIconButton.small(
                 icon: Icons.star,
                 iconColor: Colors.blue,
                 onPressed: () {
                   matchEngine.currentMatch.superLike();
                 },
               ),
-              new RoundIconButton.large(
+
+          new RoundIconButton.large(
                 icon: Icons.favorite,
                 iconColor: Colors.green,
                 onPressed: () {
                   matchEngine.currentMatch.like();
                 },
               ),
+
               new RoundIconButton.small(
                 icon: Icons.lock,
                 iconColor: Colors.purple,
@@ -180,7 +200,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void onSwipeComplete() {
+      setState(() {
 
+      });
   }
 }
 
@@ -220,7 +242,7 @@ class RoundIconButton extends StatelessWidget {
           boxShadow: [
             new BoxShadow(color: const Color(0x11000000), blurRadius: 10.0),
           ]),
-      child: new RawMaterialButton(
+      child: new RaisedButton(
         shape: new CircleBorder(),
         elevation: 0.0,
         child: new Icon(
@@ -228,7 +250,42 @@ class RoundIconButton extends StatelessWidget {
           color: iconColor,
         ),
         onPressed: onPressed,
+
+
       ),
     );
   }
 }
+
+
+
+//Column(children:
+//[new RoundIconButton.large(
+//icon: Icons.clear,
+//iconColor: Colors.red,
+//onPressed: () {
+//matchEngine.currentMatch.nope();
+//},
+//
+//
+//),
+//new Text(ContactsUtil.totalDislikes.toString())]),
+//Column(children:
+//[new RoundIconButton.small(
+//icon: Icons.star,
+//iconColor: Colors.blue,
+//onPressed: () {
+//matchEngine.currentMatch.superLike();
+//},
+//),
+//new Text(ContactsUtil.totalSuperLikes.toString())]),
+//
+//Column(children:
+//[new RoundIconButton.large(
+//icon: Icons.favorite,
+//iconColor: Colors.green,
+//onPressed: () {
+//matchEngine.currentMatch.like();
+//},
+//),
+//new Text(ContactsUtil.totalLikes.toString())]),

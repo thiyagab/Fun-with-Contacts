@@ -5,36 +5,49 @@ import 'package:tinder/data/profiles.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'contactsdb.dart';
 class ContactsUtil{
-  static int totalContactsLength,yettoswipelength;
-
+  static int _totalLikes,_totalSuperLikes,_totalDislikes,_totalContacts,_yettoswipelength;
+  static int get totalLikes => _totalLikes;
+  static int get totalSuperLikes => _totalSuperLikes;
+  static int get totalDislikes => _totalDislikes;
+  static int get totalContacts => _totalContacts;
+  static int get yettoswipelength=>_yettoswipelength;
 
 
 
 
   static Future<List<Profile>> loadYetoSwipeContacts() async{
     int rowCount = await DatabaseHelper.queryRowCount();
+
     if(rowCount==0){
         await syncDBContacts();
+    }else{
+      var prefs=await SharedPreferences.getInstance();
+      totalContacts=prefs.getInt("totalcontacts");
+      syncDBContacts();
     }
     List<Map<String,dynamic>> profiles=await DatabaseHelper.queryYetToSwiped();
-    yettoswipelength=profiles.length;
-
+    _yettoswipelength=profiles.length;
+    _totalSuperLikes=await DatabaseHelper.queryRowCountFor(ContactState.superliked);
+    _totalLikes=await DatabaseHelper.queryRowCountFor(ContactState.liked);
+    _totalDislikes=await DatabaseHelper.queryRowCountFor(ContactState.disliked);
     return shuffle(profiles.map((map)=>Profile().fromMap(map)).toList());
 
   }
 
-  static int getTotalContactsLength(){
-    return totalContactsLength;
+
+  static set totalContacts(int count){
+     _totalContacts=count;
   }
 
-  static int getYetToSwipeLength(){
-    return yettoswipelength;
+
+  static  set yettoswipelength (int count){
+     _yettoswipelength=count;
   }
 
   static void updateTotalContactsLength(int length) async{
-     totalContactsLength=length;
+     _totalContacts=length;
      final prefs = await SharedPreferences.getInstance();
-     prefs.setInt("totalcontacts", totalContactsLength);
+     prefs.setInt("totalcontacts", _totalContacts);
   }
 
   //TODO Optimize this. For instance we dont need to do update every time, lets check timetaken and spend extra effort
@@ -68,9 +81,9 @@ class ContactsUtil{
     if(profilesToInsert.length>0)
       DatabaseHelper.insertAllProfiles(profilesToInsert);
     if(profilesToUpdate.length>0)
-      DatabaseHelper.updateAllProfiles(profilesToInsert);
+      DatabaseHelper.updateAllProfiles(profilesToUpdate);
     if(profilesToDelete.length>0){
-      DatabaseHelper.insertAllProfiles(profilesToInsert);
+      DatabaseHelper.deleteAllProfiles(profilesToDelete);
     }
 
     DatabaseHelper.queryRowCountFor(ContactState.yettoswipe);
@@ -108,17 +121,20 @@ class ContactsUtil{
   }
 
   static Future<int> updateLiked(String contactId) async {
-
+    _yettoswipelength--;
+    _totalLikes++;
     return DatabaseHelper.updateContactState(contactId, ContactState.liked);
   }
 
   static Future<int> updateDisliked(String contactId) async {
-
+    _yettoswipelength--;
+    _totalDislikes++;
     return  DatabaseHelper.updateContactState(contactId, ContactState.disliked);
   }
 
   static Future<int> updateSuperliked(String contactId) async {
-
+    _yettoswipelength--;
+    _totalSuperLikes++;
     return  DatabaseHelper.updateContactState(contactId, ContactState.superliked);
   }
 

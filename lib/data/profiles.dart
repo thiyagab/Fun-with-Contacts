@@ -23,8 +23,8 @@ class Profile {
 
   Profile({this.name,this.phones, this.id,this.emails,this.avatar});
 
-  @override
-  bool operator ==(covariant Profile other) => other.id == id;
+  bool operator ==(o) => o is Profile && id == o.id;
+  int get hashCode => id.hashCode;
 
   Map<String,dynamic> toMap(){
     var map = Map<String,dynamic>();
