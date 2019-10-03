@@ -29,15 +29,15 @@ class ContactDetails extends StatefulWidget {
   ContactDetails({Key key, this.contact}) : super(key: key);
 
   @override
-  createState() => new ContactDetailsPageState(contact);
+  createState() => new ContactDetailsPageState();
 }
 
 class ContactDetailsPageState extends State<ContactDetails> {
   final globalKey = new GlobalKey<ScaffoldState>();
 
-  final Profile contact;
+//  final Profile contact;
 
-  ContactDetailsPageState(this.contact);
+//  ContactDetailsPageState(this.contact);
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class ContactDetailsPageState extends State<ContactDetails> {
     return new Material(
       child: new InkWell(
         child: new Image.memory(
-          contact.avatar,
+          widget.contact.avatar,
           height: 100.0,
           width: 100.0,
           fit: BoxFit.fill,
@@ -75,12 +75,12 @@ class ContactDetailsPageState extends State<ContactDetails> {
     return ListView(
       children: <Widget>[
         new SizedBox(
-          child: (contact.avatar!=null && contact.avatar.length>0)?_contactAvatar():ColorfulNameDisplay(contact.name),
+          child: (widget.contact.avatar!=null && widget.contact.avatar.length>0)?_contactAvatar():ColorfulNameDisplay(widget.contact.name),
           height: 150.0,
         ),
 //        listTile(contact.name, Icons.account_circle, Texts.NAME),
-        contact.phones!=null?Column(children:getContactWidget(contact.phones,Icons.phone, Texts.PHONE)):Text(""),
-        contact.emails!=null?Column(children:getContactWidget(contact.emails,Icons.email, Texts.EMAIL)):Text(""),
+        widget.contact.phones!=null?Column(children:getContactWidget(widget.contact.phones,Icons.phone, Texts.PHONE)):Text(""),
+        widget.contact.emails!=null?Column(children:getContactWidget(widget.contact.emails,Icons.email, Texts.EMAIL)):Text(""),
 
       ],
     );

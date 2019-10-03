@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       title: new Text(
-       ContactsUtil.yettoswipelength.toString()+'/'+ContactsUtil.totalContacts.toString()
+       _buildTitle()
       ),
       actions: <Widget>[
         new IconButton(
@@ -203,6 +203,13 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
 
       });
+  }
+
+  String _buildTitle() {
+    if(ContactsUtil.yettoswipelength==null){
+      return "Loading..";
+    }else
+      return (ContactsUtil.totalContacts-ContactsUtil.yettoswipelength).toString()+'/'+ContactsUtil.totalContacts.toString();
   }
 }
 
