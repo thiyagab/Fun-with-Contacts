@@ -191,13 +191,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.5"
-  two_letter_icon:
-    dependency: "direct main"
-    description:
-      name: two_letter_icon
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:

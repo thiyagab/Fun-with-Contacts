@@ -112,11 +112,12 @@ class ContactsUtil{
     Profile profile =
     new Profile(
       name: contact.displayName,
-      phones: contact.phones.map((item)=>item.value).toList(),
-      emails:contact.emails.map((item)=>item.value).toList(),
+      phones: contact.phones.map((item)=>item.value).toSet(),
+      emails:contact.emails.map((item)=>item.value).toSet(),
       id:contact.identifier,
       avatar:contact.avatar,
     );
+    removeDuplicateNumbers(profile);
     return profile;
   }
 
@@ -136,6 +137,42 @@ class ContactsUtil{
     _yettoswipelength--;
     _totalSuperLikes++;
     return  DatabaseHelper.updateContactState(contactId, ContactState.superliked);
+  }
+
+  static void removeDuplicateNumbers(Profile profile) {
+    if(profile.phones!=null && profile.phones.length>0){
+        Set<String> phones = Set();
+        for(String phone in profile.phones){
+          phone = removeSpaces(phone);
+          if(phone.length>0)
+            phones.add(phone);
+        }
+        profile.phones=phones;
+    }
+
+//    if(profile.emails!=null && profile.emails.length>0){
+//      Set<String> emails = Set();
+//      for(String email in profile.emails){
+//        email = removeSpaces(email);
+//        if(email.length>0)
+//        emails.add(email);
+//      }
+//      profile.emails=emails;
+//    }
+  }
+
+  static String removeSpaces(String text){
+    String prefix="";
+    if(text.startsWith("+")){
+      text=text.substring(1);
+      prefix="+";
+    }
+
+    return prefix+text.replaceAll(new RegExp("\\D"), "");
+  }
+
+  static void deleteAllData(){
+    DatabaseHelper.deleteAll();
   }
 
 }

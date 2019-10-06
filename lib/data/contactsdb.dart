@@ -187,4 +187,11 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
+
+  // Deletes the row specified by the id. The number of affected rows is
+  // returned. This should be 1 as long as the row exists.
+  static Future<int> deleteAll() async {
+    Database db = await instance.database;
+    return await db.delete(table);
+  }
 }

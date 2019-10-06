@@ -63,10 +63,12 @@ class ContactDetailsPageState extends State<ContactDetails> {
   }
 
 
-  List<Widget> getContactWidget(List<String> texts,IconData icon,String type){
+  List<Widget> getContactWidget(Iterable<String> texts,IconData icon,String type){
     var list = List<Widget>();
     for(int i=0;i<texts.length;i++){
-      list.add(listTile(texts[i], i!=0?null:icon, type));
+      if(texts.elementAt(i).length>0) {
+        list.add(listTile(texts.elementAt(i), i != 0 ? null : icon, type));
+      }
     }
     return list;
   }

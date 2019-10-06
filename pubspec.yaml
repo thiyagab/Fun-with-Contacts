@@ -30,7 +30,6 @@ dependencies:
   contacts_service: '^0.3.4'
   url_launcher:
   android_intent:
-  two_letter_icon: ^0.0.1
   logger: ^0.7.0+2
   sqflite: ^1.1.6
   path_provider: ^0.4.1

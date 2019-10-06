@@ -16,10 +16,10 @@ final List<Profile> demoProfiles = [
 
 class Profile {
   final String name;
-  final List<String> phones;
+  Set<String> phones;
   final String id;
   final Uint8List avatar;
-  final List<String> emails;
+   Set<String> emails;
 
   Profile({this.name,this.phones, this.id,this.emails,this.avatar});
 
@@ -39,8 +39,8 @@ class Profile {
     return Profile(
       name : map["name"],
       id:map["_id"],
-      emails:map["emails"]!=null? (map["emails"] as String).split(","):List(),
-      phones:map["phones"]!=null? (map["phones"] as String).split(","):List(),
+      emails:map["emails"]!=null? (map["emails"] as String).split(",").toSet():Set(),
+      phones:map["phones"]!=null? (map["phones"] as String).split(",").toSet():Set(),
     );
   }
 }
