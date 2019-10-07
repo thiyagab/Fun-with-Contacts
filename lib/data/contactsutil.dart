@@ -173,6 +173,7 @@ class ContactsUtil{
 
   static void deleteAllData(){
     DatabaseHelper.deleteAll();
+
   }
 
 }

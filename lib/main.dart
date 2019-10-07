@@ -23,57 +23,22 @@ class MyApp extends StatelessWidget {
         primaryColorBrightness: Brightness.light,
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Fun with contacts'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  MatchEngine matchEngine;
+  Future<List<Profile>> _profiles;
 
-  Widget _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0.0,
-      centerTitle: true,
-      leading: new IconWithTextButton(
-        icon:
-          Icons.person,
-          iconColor: Colors.grey,
-          size: 40.0,
-
-        onPressed: () {
-          // TODO
-        },
-      ),
-      title: new Text(_buildTitle()),
-      actions: <Widget>[
-        new IconWithTextButton(
-          icon:
-            Icons.chat_bubble,
-            iconColor: Colors.grey,
-            size: 40.0,
-          onPressed: () {
-            // TODO
-          },
-        ),
-      ],
-    );
-  }
-
-  void loadContacts() async{
-    List profiles=await ContactsUtil.loadYetoSwipeContacts();
-    _buildMatchEngine(profiles);
-
+  void loadContacts() {
+    _profiles = ContactsUtil.loadYetoSwipeContacts();
   }
 
   MatchEngine _buildMatchEngine(List profiles) {
@@ -82,13 +47,111 @@ class _MyHomePageState extends State<MyHomePage> {
           matches: profiles.map((Object profile) {
         return Match(profile: profile);
       }).toList());
-      newMatchEngine.addListener(onSwipeComplete);
-      matchEngine=newMatchEngine;
       return newMatchEngine;
     }
     return null;
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _profiles,
+        builder: (context, snapshot) =>
+            snapshot.hasData && (snapshot.data as List).length > 0
+                ? new ContactsTinderUI(
+                    matchEngine: _buildMatchEngine(snapshot.data),
+                    refreshPressed:this.refreshPressed)
+                : Center(child: Text("Loading..")));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadContacts();
+  }
+
+  void refreshPressed() {
+    ContactsUtil.deleteAllData();
+    loadContacts();
+    setState(() {
+
+    });
+//    matchEngine.notifyListeners();
+//    matchEngine=null;
+  }
+}
+
+class ContactsTinderUI extends StatefulWidget {
+  ContactsTinderUI({Key key, this.matchEngine,this.refreshPressed}) : super(key: key);
+
+  final MatchEngine matchEngine;
+  final VoidCallback refreshPressed;
+
+
+  @override
+  _ContactsTinderUIState createState() => _ContactsTinderUIState();
+}
+
+class _ContactsTinderUIState extends State<ContactsTinderUI> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.matchEngine != null) {
+      widget.matchEngine.addListener(onSwipeComplete);
+    }
+  }
+
+  @override
+  void didUpdateWidget(ContactsTinderUI oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(oldWidget!=null && oldWidget.matchEngine!=null)
+      oldWidget.matchEngine.removeListener(onSwipeComplete);
+    widget.matchEngine.addListener(onSwipeComplete);
+  }
+
+
+
+  void onSwipeComplete() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: widget.matchEngine != null
+          ? new CardStack(matchEngine: widget.matchEngine)
+          : Center(child: Text("Loading..")),
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+      centerTitle: true,
+      leading: new IconWithTextButton(
+        icon: Icons.person,
+        iconColor: Colors.grey,
+        size: 40.0,
+        onPressed: () {
+          // TODO
+        },
+      ),
+      title: new Text(_buildTitle()),
+      actions: <Widget>[
+        new IconWithTextButton(
+          icon: Icons.chat_bubble,
+          iconColor: Colors.grey,
+          size: 40.0,
+          onPressed: () {
+            // TODO
+          },
+        ),
+      ],
+    );
+  }
 
   Widget _buildBottomBar() {
     return BottomAppBar(
@@ -99,88 +162,33 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-
               IconWithTextButton.small(
-                    icon:Icons.refresh,
-                    iconColor: Colors.orange,
-                    text: "Refresh",
-                    onPressed: refreshPressed,
-                  ),
-
-                 IconWithTextButton.small(
-                  icon:Icons.clear,
+                icon: Icons.refresh,
+                iconColor: Colors.orange,
+                text: "Refresh",
+                onPressed: widget.refreshPressed,
+              ),
+              IconWithTextButton.small(
+                  icon: Icons.clear,
                   iconColor: Colors.red,
-                text:ContactsUtil.totalDislikes.toString(),
-                    onPressed: ()=>{matchEngine.currentMatch.nope()}
-              ),
-                 IconWithTextButton.small(
-                  icon:Icons.star,
+                  text: ContactsUtil.totalDislikes.toString(),
+                  onPressed: () => {widget.matchEngine.currentMatch.nope()}),
+              IconWithTextButton.small(
+                  icon: Icons.star,
                   iconColor: Colors.blue,
-                text:ContactsUtil.totalSuperLikes.toString(),
-                    onPressed: ()=>{matchEngine.currentMatch.superLike()}
-              ),
-
-                 IconWithTextButton.small(
-                  icon:Icons.favorite,
+                  text: ContactsUtil.totalSuperLikes.toString(),
+                  onPressed: () =>
+                      {widget.matchEngine.currentMatch.superLike()}),
+              IconWithTextButton.small(
+                  icon: Icons.favorite,
                   iconColor: Colors.green,
-                text:ContactsUtil.totalLikes.toString(),
-                    onPressed: ()=>{matchEngine.currentMatch.like()}
-              ),
-
-                 IconWithTextButton.small(
-                  icon:Icons.share,
-                  iconColor: Colors.purple,
-                text:"Share"
-              ),
+                  text: ContactsUtil.totalLikes.toString(),
+                  onPressed: () => {widget.matchEngine.currentMatch.like()}),
+              IconWithTextButton.small(
+                  icon: Icons.share, iconColor: Colors.purple, text: "Share"),
             ],
           ),
         ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: ContactsUtil.loadYetoSwipeContacts(),
-        builder: (context, snapshot) => Scaffold(
-              appBar: _buildAppBar(),
-              body: snapshot.hasData && (snapshot.data as List).length > 0
-                  ? new CardStack(matchEngine: _buildMatchEngine(snapshot.data))
-                  : Center(child: Text("Loading..")),
-              bottomNavigationBar: _buildBottomBar(),
-            ));
-  }
-
-  @override
-  Widget build1(BuildContext context) {
-    return Scaffold(
-          appBar: _buildAppBar(),
-          body: matchEngine!=null
-              ? new CardStack(matchEngine: this.matchEngine)
-              : Center(child: Text("Loading..")),
-          bottomNavigationBar: _buildBottomBar(),
-        );
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-//    loadContacts();
-  }
-
-  void openContact(String contactId) async {
-//    if (platform.isAndroid) {
-    final AndroidIntent intent = AndroidIntent(
-      action: 'action_view',
-      data: 'content://com.android.contacts/contacts/' +
-          contactId, // replace com.example.app with your applicationId
-    );
-    await intent.launch();
-//    }
-  }
-  //TODO DO a proper state management, this code refreshes the whole UI, and refreshes contact again
-  void onSwipeComplete() {
-    setState(() {});
   }
 
   String _buildTitle() {
@@ -193,11 +201,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ContactsUtil.totalContacts.toString();
   }
 
-  void refreshPressed() {
-    ContactsUtil.deleteAllData();
-    loadContacts();
-    matchEngine.notifyListeners();
-//    matchEngine=null;
+
+
+  void openContact(String contactId) async {
+//    if (platform.isAndroid) {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: 'content://com.android.contacts/contacts/' +
+          contactId, // replace com.example.app with your applicationId
+    );
+    await intent.launch();
+//    }
   }
 }
-
