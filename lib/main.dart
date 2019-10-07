@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './cards.dart';
 import './matches.dart';
+import './widgets/iconbutton.dart';
 import 'package:tinder/data/profiles.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'dart:math';
@@ -17,12 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fun with contacts',
       theme: ThemeData(
         primaryColorBrightness: Brightness.light,
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Fun with contacts'),
     );
   }
 }
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       centerTitle: true,
-      leading: new IconButton(
+      leading: new IconWithTextButton(
         icon:
           Icons.person,
           iconColor: Colors.grey,
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       title: new Text(_buildTitle()),
       actions: <Widget>[
-        new IconButton(
+        new IconWithTextButton(
           icon:
             Icons.chat_bubble,
             iconColor: Colors.grey,
@@ -88,26 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return null;
   }
 
-  //TODO Optimize
-
-  void testMethod() {
-    var profiles = Set();
-    Profile profile1 = Profile(id: "200743");
-    Profile profile2 = Profile(id: "200744");
-    Profile profile3 = Profile(id: "200745");
-
-    profiles.add(profile1);
-    profiles.add(profile2);
-    profiles.add(profile3);
-
-    Profile profile4 = Profile(id: "200743");
-    print(profile1 == profile4);
-    profiles.remove(profile4);
-  }
-
-  String appendString(Item item) {
-    return item.label + " " + item.value;
-  }
 
   Widget _buildBottomBar() {
     return BottomAppBar(
@@ -119,34 +100,34 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
 
-                  IconButton.small(
+              IconWithTextButton.small(
                     icon:Icons.refresh,
                     iconColor: Colors.orange,
                     text: "Refresh",
                     onPressed: refreshPressed,
                   ),
 
-                new IconButton.small(
+                 IconWithTextButton.small(
                   icon:Icons.clear,
                   iconColor: Colors.red,
                 text:ContactsUtil.totalDislikes.toString(),
                     onPressed: ()=>{matchEngine.currentMatch.nope()}
               ),
-                new IconButton.small(
+                 IconWithTextButton.small(
                   icon:Icons.star,
                   iconColor: Colors.blue,
                 text:ContactsUtil.totalSuperLikes.toString(),
                     onPressed: ()=>{matchEngine.currentMatch.superLike()}
               ),
 
-                new IconButton.small(
+                 IconWithTextButton.small(
                   icon:Icons.favorite,
                   iconColor: Colors.green,
                 text:ContactsUtil.totalLikes.toString(),
                     onPressed: ()=>{matchEngine.currentMatch.like()}
               ),
 
-                new IconButton.small(
+                 IconWithTextButton.small(
                   icon:Icons.share,
                   iconColor: Colors.purple,
                 text:"Share"
@@ -156,21 +137,21 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 
-//  @override
-//  Widget build1(BuildContext context) {
-//    return FutureBuilder(
-//        future: loadContacts(),
-//        builder: (context, snapshot) => Scaffold(
-//              appBar: _buildAppBar(),
-//              body: snapshot.hasData && (snapshot.data as List).length > 0
-//                  ? new CardStack(matchEngine: _buildMatchEngine(snapshot.data))
-//                  : Center(child: Text("Loading..")),
-//              bottomNavigationBar: _buildBottomBar(),
-//            ));
-//  }
-
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: ContactsUtil.loadYetoSwipeContacts(),
+        builder: (context, snapshot) => Scaffold(
+              appBar: _buildAppBar(),
+              body: snapshot.hasData && (snapshot.data as List).length > 0
+                  ? new CardStack(matchEngine: _buildMatchEngine(snapshot.data))
+                  : Center(child: Text("Loading..")),
+              bottomNavigationBar: _buildBottomBar(),
+            ));
+  }
+
+  @override
+  Widget build1(BuildContext context) {
     return Scaffold(
           appBar: _buildAppBar(),
           body: matchEngine!=null
@@ -184,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadContacts();
+//    loadContacts();
   }
 
   void openContact(String contactId) async {
@@ -197,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await intent.launch();
 //    }
   }
-
+  //TODO DO a proper state management, this code refreshes the whole UI, and refreshes contact again
   void onSwipeComplete() {
     setState(() {});
   }
@@ -220,81 +201,3 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class IconButton extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final double size;
-  final VoidCallback onPressed;
-  final String text;
-
-  IconButton.large({
-    this.icon,
-    this.iconColor,
-    this.onPressed,
-    this.text
-  }) : size = 60.0;
-
-  IconButton.small({
-    this.icon,
-    this.iconColor,
-    this.onPressed,
-    this.text
-  }) : size = 40.0;
-
-  IconButton({
-    this.icon,
-    this.iconColor,
-    this.size,
-    this.text,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return
-    Container(
-        padding: EdgeInsets.all(5.0),
-        child: InkWell(
-
-      onTap: this.onPressed,
-      child:new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      new Icon(
-        this.icon,
-        color: this.iconColor,
-        size: size,
-      ),
-      if(null!=text)Text(text)
-    ])));
-  }
-}
-
-//Column(children:
-//[new RoundIconButton.large(
-//icon: Icons.clear,
-//iconColor: Colors.red,
-//onPressed: () {
-//matchEngine.currentMatch.nope();
-//},
-//
-//
-//),
-//new Text(ContactsUtil.totalDislikes.toString())]),
-//Column(children:
-//[new RoundIconButton.small(
-//icon: Icons.star,
-//iconColor: Colors.blue,
-//onPressed: () {
-//matchEngine.currentMatch.superLike();
-//},
-//),
-//new Text(ContactsUtil.totalSuperLikes.toString())]),
-//
-//Column(children:
-//[new RoundIconButton.large(
-//icon: Icons.favorite,
-//iconColor: Colors.green,
-//onPressed: () {
-//matchEngine.currentMatch.like();
-//},
-//),
-//new Text(ContactsUtil.totalLikes.toString())]),
