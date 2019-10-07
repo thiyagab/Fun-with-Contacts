@@ -74,7 +74,7 @@ class ContactDetailsPageState extends State<ContactDetails> {
   }
 
   Widget _contactDetails() {
-    return ListView(
+    return Column(
       children: <Widget>[
         new SizedBox(
           child: (widget.contact.avatar!=null && widget.contact.avatar.length>0)?_contactAvatar():ColorfulNameDisplay(widget.contact.name),

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tinder">
+    package="com.droidapps.funwithcontacts">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -10,11 +10,11 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="tinder"
+        android:label="Fun with Contacts"
         android:icon="@mipmap/ic_launcher">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.droidapps.funwithcontacts.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

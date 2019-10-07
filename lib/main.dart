@@ -121,7 +121,7 @@ class _ContactsTinderUIState extends State<ContactsTinderUI> {
       appBar: _buildAppBar(),
       body: widget.matchEngine != null
           ? new CardStack(matchEngine: widget.matchEngine)
-          : Center(child: Text("Loading..")),
+          : CircularProgressIndicator(),
       bottomNavigationBar: _buildBottomBar(),
     );
   }

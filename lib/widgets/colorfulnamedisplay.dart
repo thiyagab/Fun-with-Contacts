@@ -1,10 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ColorfulNameDisplay extends StatelessWidget {
-  ColorfulNameDisplay(this.name);
+  ColorfulNameDisplay(this.name){
+    this.color=getRandomColor();
+  }
+
+
 
   /// The text that will be used for the icon. It is truncated to 2 characters.
   final String name;
+   Color color;
 
   String getName() {
 //    if (name != null && name.length != 0) {
@@ -55,6 +62,15 @@ class ColorfulNameDisplay extends StatelessWidget {
         return Colors.blueAccent;
     }
     return Colors.black54;
+  }
+
+ List<Color> colors = [Colors.blueGrey,Colors.blueAccent,
+      Colors.orange,Colors.red,Colors.amber,Colors.black54,
+   Colors.teal,Colors.indigoAccent,Colors.lightGreen,Colors.deepOrangeAccent ];
+
+
+  Color getRandomColor(){
+    return colors.elementAt(Random().nextInt(colors.length-1));
   }
 
   @override
