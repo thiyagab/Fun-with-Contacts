@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:tinder/data/contactsutil.dart';
 import 'package:tinder/data/profiles.dart';
 import '../utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class ContactDetailsPageState extends State<ContactDetails> {
           height: 100.0,
           width: 100.0,
           fit: BoxFit.fill,
-        ),
+        )
       ),
     );
   }
@@ -77,7 +78,8 @@ class ContactDetailsPageState extends State<ContactDetails> {
     return Column(
       children: <Widget>[
         new SizedBox(
-          child: (widget.contact.avatar!=null && widget.contact.avatar.length>0)?_contactAvatar():ColorfulNameDisplay(widget.contact.name),
+          child: (widget.contact.avatar!=null && widget.contact.avatar.length>0)?_contactAvatar():
+          new InkWell(child:ColorfulNameDisplay(widget.contact.name),onTap: openContact),
           height: 150.0,
         ),
 //        listTile(contact.name, Icons.account_circle, Texts.NAME),
@@ -139,5 +141,9 @@ class ContactDetailsPageState extends State<ContactDetails> {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  void openContact() {
+    ContactsUtil.openContact(widget.contact.id);
   }
 }

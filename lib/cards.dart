@@ -213,7 +213,7 @@ class _DraggableCardState extends State<DraggableCard>
     super.initState();
     slideBackAnimation = new AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 500),
     )
       ..addListener(() => setState(() {
             cardOffset = Offset.lerp(slideBackStart, const Offset(0.0, 0.0),
@@ -235,7 +235,7 @@ class _DraggableCardState extends State<DraggableCard>
 
     slideOutAnimation = new AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300),
     )
       ..addListener(() => setState(() {
             cardOffset = slideOutTween.evaluate(slideOutAnimation);
@@ -418,12 +418,13 @@ class _DraggableCardState extends State<DraggableCard>
               width: anchorBounds.width,
               height: anchorBounds.height,
               padding: const EdgeInsets.all(16.0),
-              child: new GestureDetector(
+              child:
+              widget.isDraggable?new GestureDetector(
                 onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
                 onPanEnd: _onPanEnd,
                 child: widget.card,
-              ),
+              ):widget.card,
             ),
           ),
         );

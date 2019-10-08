@@ -165,7 +165,7 @@ class _ContactsTinderUIState extends State<ContactsTinderUI> {
               IconWithTextButton.small(
                 icon: Icons.refresh,
                 iconColor: Colors.orange,
-                text: "Refresh",
+                text: "Reset",
                 onPressed: widget.refreshPressed,
               ),
               IconWithTextButton.small(
@@ -185,7 +185,7 @@ class _ContactsTinderUIState extends State<ContactsTinderUI> {
                   text: ContactsUtil.totalLikes.toString(),
                   onPressed: () => {widget.matchEngine.currentMatch.like()}),
               IconWithTextButton.small(
-                  icon: Icons.share, iconColor: Colors.purple, text: "Share"),
+                  icon: Icons.undo, iconColor: Colors.purple, text: "Undo"),
             ],
           ),
         ));
@@ -203,14 +203,4 @@ class _ContactsTinderUIState extends State<ContactsTinderUI> {
 
 
 
-  void openContact(String contactId) async {
-//    if (platform.isAndroid) {
-    final AndroidIntent intent = AndroidIntent(
-      action: 'action_view',
-      data: 'content://com.android.contacts/contacts/' +
-          contactId, // replace com.example.app with your applicationId
-    );
-    await intent.launch();
-//    }
-  }
 }

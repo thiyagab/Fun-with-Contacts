@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:android_intent/android_intent.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tinder/data/profiles.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -174,6 +175,18 @@ class ContactsUtil{
   static void deleteAllData(){
     DatabaseHelper.deleteAll();
 
+  }
+
+
+  static void openContact(String contactId) async {
+//    if (platform.isAndroid) {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: 'content://com.android.contacts/contacts/' +
+          contactId, // replace com.example.app with your applicationId
+    );
+    await intent.launch();
+//    }
   }
 
 }
